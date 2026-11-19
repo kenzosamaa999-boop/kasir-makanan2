@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasir Makanan</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <section id="loginPage" class="login-page">
+    <form id="loginForm" class="login-card">
+      <div class="logo">K<span>+</span></div>
+      <h1>Kasir Makanan</h1>
+      <p>Silakan login untuk masuk ke dashboard</p>
+
+      <label>Email Admin</label>
+      <input type="email" id="email" placeholder="Masukkan email" required>
+
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Masukkan password" required>
+
+      <button type="submit" id="loginButton">LOGIN</button>
+      <div id="loginMessage" class="message"></div>
+    </form>
+  </section>
+
+  <!-- APLIKASI -->
+  <div id="app" class="app hidden">
+
+    <aside class="sidebar">
+      <div class="brand"><span>K+</span> Kasir Makanan</div>
+
+      <div class="admin-info">
+        <div class="admin-avatar">A</div>
+        <div><b>Administrator</b><small>Admin Kasir</small></div>
+      </div>
+
+      <nav>
+        <button class="nav-link active" data-page="dashboard">▦ Dashboard</button>
+        <button class="nav-link" data-page="kasir">▣ Kasir</button>
+        <button class="nav-link" data-page="produk">🍔 Data Makanan</button>
+        <button class="nav-link" data-page="riwayat">▤ Riwayat Transaksi</button>
+      </nav>
+
+      <button id="logoutButton" class="logout">↪ Keluar</button>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p>Selamat datang di sistem kasir makanan</p>
+        </div>
+        <div class="top-admin">● Admin Online</div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section id="dashboardPage" class="page">
+        <div class="stats">
+          <div class="stat-card">
+            <span>Total Menu</span>
+            <strong id="totalProduk">0</strong>
+            <small>Menu makanan dan minuman</small>
+          </div>
+          <div class="stat-card">
+            <span>Total Transaksi</span>
+            <strong id="totalTransaksi">0</strong>
+            <small>Jumlah transaksi tersimpan</small>
+          </div>
+          <div class="stat-card">
+            <span>Total Pendapatan</span>
+            <strong id="totalPendapatan">Rp0</strong>
+            <small>Akumulasi penjualan</small>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Menu Terbaru</h3>
+          <div id="dashboardProducts" class="food-grid"></div>
+        </div>
+      </section>
+
+      <!-- KASIR -->
+      <section id="kasirPage" class="page hidden">
+        <div class="cashier-layout">
+          <div class="panel">
+            <div class="section-heading">
+              <h3>Pilih Menu</h3>
+              <input id="searchCashier" class="search" placeholder="Cari makanan...">
+            </div>
+            <div id="cashierProducts" class="food-grid"></div>
+          </div>
+
+          <div class="panel cart-panel">
+            <h3>Keranjang Belanja</h3>
+            <div id="cartItems" class="cart-items">
+              <p class="empty">Belum ada makanan dipilih</p>
+            </div>
+
+            <div class="cart-total">
+              <span>Total Pembayaran</span>
+              <strong id="cartTotal">Rp0</strong>
+            </div>
+
+            <label>Metode Pembayaran</label>
+            <select id="paymentMethod">
+              <option value="Tunai">Tunai</option>
+              <option value="Transfer">Transfer</option>
+              <option value="QRIS">QRIS</option>
+            </select>
+
+            <button id="checkoutButton" class="primary-btn">PROSES PEMBAYARAN</button>
+            <button id="clearCart" class="secondary-btn">Kosongkan Keranjang</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUK -->
+      <section id="produkPage" class="page hidden">
+        <div class="panel">
+          <div class="section-heading">
+            <h3>Kelola Makanan</h3>
+            <button id="addProductButton" class="primary-btn">+ Tambah Makanan</button>
+          </div>
+
+          <div id="productFormContainer" class="form-container hidden">
+            <h3 id="productFormTitle">Tambah Makanan</h3>
+            <form id="productForm">
+              <input type="hidden" id="productId">
+
+              <div class="form-grid">
+                <div>
+                  <label>Nama Makanan</label>
+                  <input id="productName" required placeholder="Contoh: Nasi Goreng">
+                </div>
+                <div>
+                  <label>Kategori</label>
+                  <select id="productCategory">
+                    <option>Makanan</option>
+                    <option>Minuman</option>
+                    <option>Camilan</option>
+                    <option>Lainnya</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Harga (Rp)</label>
+                  <input id="productPrice" type="number" min="0" required>
+                </div>
+                <div>
+                  <label>Stok</label>
+                  <input id="productStock" type="number" min="0" required>
+                </div>
+                <div class="full">
+                  <label>Foto Makanan</label>
+                  <input id="productPhoto" type="file" accept="image/*">
+                  <small>Format gambar JPG, PNG, atau WebP.</small>
+                  <img id="photoPreview" class="photo-preview hidden" alt="Pratinjau foto">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="primary-btn" type="submit" id="saveProductButton">Simpan Makanan</button>
+                <button class="secondary-btn" type="button" id="cancelProductButton">Batal</button>
+              </div>
+              <div id="productMessage" class="message"></div>
+            </form>
+          </div>
+
+          <div class="section-heading">
+            <h3>Daftar Makanan</h3>
+            <input id="searchProducts" class="search" placeholder="Cari menu...">
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Nama</th>
+                  <th>Kategori</th>
+                  <th>Harga</th>
+                  <th>Stok</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="productTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIWAYAT -->
+      <section id="riwayatPage" class="page hidden">
+        <div class="panel">
+          <h3>Riwayat Transaksi</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tanggal</th>
+                  <th>Total</th>
+                  <th>Pembayaran</th>
+                  <th>Detail</th>
+                </tr>
+              </thead>
+              <tbody id="historyTable"></tbody>
+            </table>
+          </div>
+          <div id="historyDetail" class="history-detail"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
